@@ -40,7 +40,8 @@ def obtener_usuarios():
         for usuario in usuarios:
             temp = {
                 "name": usuario.name,
-                "email": usuario.email
+                "email": usuario.email,
+                "password": usuario.password
             }
             lista.append(temp)
         

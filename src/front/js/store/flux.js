@@ -12,8 +12,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 					title: "SECOND",
 					background: "white",
 					initial: "white"
-				}
-			]
+				},
+				
+			],
+			Lista: []
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
@@ -27,9 +29,12 @@ const getState = ({ getStore, getActions, setStore }) => {
 						}
 					})
 					let respuesta = await response.json()
-					if (respuesta.ok)
+					if (response.status === 200)
 					{
-						console.log("El usuario se ha registrado")
+						return true
+					}
+					else{
+						return false
 					}
 				}catch(error){
 					console.log("Error loading message from backend", error)
@@ -47,12 +52,16 @@ const getState = ({ getStore, getActions, setStore }) => {
 					})
 
 					let respuesta = await response.json()
-					if(respuesta)
+					if(response.status == 200)
 					{
 						console.log(respuesta)
 						localStorage.setItem("token", respuesta.token)
 						localStorage.setItem("name", respuesta.user)
 						localStorage.setItem("email", respuesta.email)
+						return true
+					}
+					else{
+						return false
 					}
 				} catch (error) {
 					return ("Error loading message from backend", error)
@@ -71,10 +80,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 						}
 					})
 					
-
 					let data = await response.json()
-					console.log(data)
-					
+					if(data.Usuarios){
+						setStore({...getStore, Lista: data.Usuarios})
+					}
+					console.log(getStore().Lista)
 				} catch (error) {
 					return ("Error loading message from backend", error)
 				}

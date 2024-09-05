@@ -6,7 +6,10 @@ export const Form = () => {
 
     const [formData, setFormData] = useState({email: "", password: ""})
     const {actions, store} = useContext(Context)
+    const [status, setStatus] = useState(null)
     const navigate = useNavigate();
+
+    let result = true
 
     const getData = (e) => {
 
@@ -16,16 +19,32 @@ export const Form = () => {
 
     const sendData = async (e) => {
         e.preventDefault();
-        await actions.login(formData); 
+        const result = await actions.login(formData);
+        setStatus(result);
 
-        const token = localStorage.getItem("token"); 
-        if (token) {
+        if (result) {
             navigate("/home_user")
+        }
+        else{
+            navigate("/")
+        }
+    }
+
+    const respuesta = (status) => {
+        if (status === false) {
+            return (
+                <div class="alert alert-danger mt-2" role="alert">
+                    La dirección de correo electrónico o la contraseña que has introducido no son correctas.
+                </div>
+            )}
+        else{
+            return null
         }
     };
     
     return(
         <form onSubmit={sendData}>
+            <h1 className="text-center">Login</h1>
             <div class="mb-3">
                 <label for="exampleInputEmail1" class="form-label">Email address</label>
                 <input type="email" class="form-control" name="email" aria-describedby="emailHelp" onChange={getData} required/>
@@ -40,7 +59,7 @@ export const Form = () => {
                 </Link>
             </div>
             <button type="submit" class="btn btn-primary container">Ingresar</button>
-            
+            {respuesta(status)}
         </form>
     )
 }
