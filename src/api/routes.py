@@ -28,6 +28,26 @@ def handle_hello():
 
     return jsonify(response_body), 200
 
+@api.route('users', methods=["GET"])
+@jwt_required()
+def obtener_usuarios():
+    try:
+        usuario_id = get_jwt_identity()
+        if usuario_id:
+            usuarios = User.query.all()
+            lista = []
+
+        for usuario in usuarios:
+            temp = {
+                "name": usuario.name,
+                "email": usuario.email
+            }
+            lista.append(temp)
+        
+        return jsonify({"Usuarios": lista}), 200
+    except Exception as e:
+        return jsonify({"error": "Internal server error", "message": str(e)}), 500
+
 @api.route('/user', methods=['POST'])
 def registrar_usuario():
     try:
@@ -66,7 +86,7 @@ def login():
         if not email or not password:
             return jsonify({"error": "Email and password are required"}), 404
         
-        login_user = User.query.filter_by(email = email).one()
+        login_user = User.query.filter_by(email = email).first()
 
         if not login_user:
             return jsonify({"error": "Email not found"}), 404
@@ -78,11 +98,9 @@ def login():
             user_id = login_user.id
             user_token = create_access_token(identity=user_id)
 
-            return jsonify({"token": user_token,})
-
-
-
-
+            return jsonify({"token": user_token, "user": login_user.name, "email": login_user.email})
+        else:
+            return jsonify({"error": "contraseña incorrecta"}), 401
 
     except Exception as e:
         return jsonify({"error": "Internal server error", "message": str(e)}), 500
